@@ -1,0 +1,25 @@
+# ---------- Python ----------
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.venv/
+venv/
+env/
+.pytest_cache/
+
+# ---------- IDE ----------
+.idea/
+.vscode/
+*.iml
+
+# ---------- 用户运行时数据 ----------
+data/settings.json
+data/logs/
+data/tasks/*
+!data/tasks/.gitkeep
+
+# ---------- 系统 ----------
+Thumbs.db
+.DS_Store
+desktop.ini
