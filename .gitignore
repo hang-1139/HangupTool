@@ -14,10 +14,10 @@ env/
 *.iml
 
 # ---------- 用户运行时数据 ----------
-data/settings.json
-data/logs/
-data/tasks/*
-!data/tasks/.gitkeep
+hangup_tool/data/settings.json
+hangup_tool/data/logs/
+hangup_tool/data/tasks/*
+!hangup_tool/data/tasks/.gitkeep
 
 # ---------- 系统 ----------
 Thumbs.db
