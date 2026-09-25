@@ -52,6 +52,12 @@ class AppSettings:
             return val
         return str(val).lower() in ("true", "1", "yes")
 
+    def get_float(self, key: str, default: float = 0.0) -> float:
+        try:
+            return float(self._data.get(key, default))
+        except (TypeError, ValueError):
+            return default
+
     def set(self, key: str, value: Any):
         self._data[key] = value
 

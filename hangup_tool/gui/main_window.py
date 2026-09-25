@@ -7,7 +7,7 @@ from PySide6.QtCore import QByteArray
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QFormLayout, QHBoxLayout,
     QPushButton, QLabel, QTextEdit, QGroupBox, QSplitter,
-    QStatusBar, QToolBar, QSpinBox, QMessageBox,
+    QStatusBar, QToolBar, QDoubleSpinBox, QMessageBox,
 )
 
 from config.settings import settings
@@ -61,9 +61,11 @@ class MainWindow(QMainWindow):
         # ---- 参数配置 ----
         param_group = QGroupBox("任务参数")
         form = QFormLayout(param_group)
-        self.interval_spin = QSpinBox()
-        self.interval_spin.setRange(1, 3600)
-        self.interval_spin.setValue(5)
+        self.interval_spin = QDoubleSpinBox()
+        self.interval_spin.setRange(0.1, 3600.0)
+        self.interval_spin.setDecimals(1)  # 保留 1 位小数
+        self.interval_spin.setSingleStep(0.1)
+        self.interval_spin.setValue(1.0)
         self.interval_spin.setSuffix(" 秒")
         form.addRow("执行间隔：", self.interval_spin)
         layout.addWidget(param_group)
@@ -191,7 +193,7 @@ class MainWindow(QMainWindow):
 
     # ================= 事件响应 =================
     def _on_start(self):
-        self.demo_task.interval = float(self.interval_spin.value())
+        self.demo_task.interval = self.interval_spin.value()
         log.info(f"用户点击开始，间隔 = {self.interval_spin.value()} 秒")
         self.task_manager.start("demo")
 
@@ -234,7 +236,7 @@ class MainWindow(QMainWindow):
             except Exception as e:
                 log.warning(f"恢复窗口位置失败：{e}")
 
-        self.interval_spin.setValue(settings.get_int("task/interval", 5))
+        self.interval_spin.setValue(settings.get_float("task/interval", 1.0))
 
     def _save_settings(self):
         # QByteArray → base64 字符串，才能塞进 JSON
