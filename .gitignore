@@ -14,11 +14,14 @@ env/
 *.iml
 
 # ---------- 用户运行时数据 ----------
-hangup_tool/data/settings.json
-hangup_tool/data/logs/
+# 先忽略 data 下所有内容
+hangup_tool/data/*
+# 放行 lang 目录（翻译属于程序资源，要提交）
+!hangup_tool/data/lang/
+# 放行 tasks 目录本身，但忽略其内容，只保留 .gitkeep
+!hangup_tool/data/tasks/
 hangup_tool/data/tasks/*
 !hangup_tool/data/tasks/.gitkeep
-!hangup_tool/data/lang/
 
 # ---------- 系统 ----------
 Thumbs.db
