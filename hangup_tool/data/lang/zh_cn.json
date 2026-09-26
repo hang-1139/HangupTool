@@ -1,0 +1,49 @@
+{
+  "_meta": { "code": "zh_cn", "name": "简体中文" },
+  "strings": {
+    "app.title": "挂机工具",
+
+    "menu.file": "文件(&F)",
+    "menu.file.save": "保存配置(&S)",
+    "menu.file.quit": "退出(&Q)",
+    "menu.help": "帮助(&H)",
+    "menu.help.about": "关于(&A)",
+
+    "toolbar.start": "开始",
+    "toolbar.stop": "停止",
+
+    "group.params": "任务参数",
+    "group.control": "任务控制",
+    "group.status": "运行状态",
+
+    "label.interval": "执行间隔：",
+    "label.interval_suffix": " 秒",
+
+    "btn.start": "▶  开始挂机 (F8)",
+    "btn.stop": "■  停止 (F9)",
+
+    "status.idle": "● 空闲",
+    "status.running": "● 运行中",
+    "status.ready": "就绪",
+    "status.stopped": "已停止",
+    "status.run_count": "运行次数：{n}",
+
+    "log.title": "运行日志",
+
+    "log.window_ready": "主窗口初始化完成",
+    "log.start_clicked": "用户点击开始，间隔 = {interval} 秒",
+    "log.stop_clicked": "用户点击停止",
+    "log.task_started": "任务启动，间隔 = {interval}s",
+    "log.task_iteration": "第 {n} 次执行",
+    "log.task_exited": "任务已退出",
+    "log.task_error": "任务 [{name}] 出错：{msg}",
+    "log.settings_saved": "配置已保存",
+    "log.exiting": "程序退出中，正在停止所有任务...",
+    "log.lang_loaded": "语言已切换：{code}",
+
+    "dialog.about.title": "关于挂机工具",
+    "dialog.about.body": "<h3>挂机工具 v{version}</h3><p>基于 PySide6 + Python 3.14 开发</p>",
+    "dialog.error.title": "任务错误",
+    "dialog.error.body": "任务 [{name}] 出错：\n\n{msg}"
+  }
+}

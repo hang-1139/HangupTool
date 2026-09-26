@@ -1,0 +1,49 @@
+{
+  "_meta": { "code": "en_us", "name": "English" },
+  "strings": {
+    "app.title": "Hangup Tool",
+
+    "menu.file": "&File",
+    "menu.file.save": "&Save Config",
+    "menu.file.quit": "&Quit",
+    "menu.help": "&Help",
+    "menu.help.about": "&About",
+
+    "toolbar.start": "Start",
+    "toolbar.stop": "Stop",
+
+    "group.params": "Task Parameters",
+    "group.control": "Task Control",
+    "group.status": "Status",
+
+    "label.interval": "Interval:",
+    "label.interval_suffix": " s",
+
+    "btn.start": "▶  Start (F8)",
+    "btn.stop": "■  Stop (F9)",
+
+    "status.idle": "● Idle",
+    "status.running": "● Running",
+    "status.ready": "Ready",
+    "status.stopped": "Stopped",
+    "status.run_count": "Runs: {n}",
+
+    "log.title": "Log",
+
+    "log.window_ready": "Main window initialized",
+    "log.start_clicked": "User clicked start, interval = {interval}s",
+    "log.stop_clicked": "User clicked stop",
+    "log.task_started": "Task started, interval = {interval}s",
+    "log.task_iteration": "Iteration #{n}",
+    "log.task_exited": "Task exited",
+    "log.task_error": "Task [{name}] error: {msg}",
+    "log.settings_saved": "Settings saved",
+    "log.exiting": "Exiting, stopping all tasks...",
+    "log.lang_loaded": "Language switched: {code}",
+
+    "dialog.about.title": "About",
+    "dialog.about.body": "<h3>Hangup Tool v{version}</h3><p>Built with PySide6 + Python 3.14</p>",
+    "dialog.error.title": "Task Error",
+    "dialog.error.body": "Task [{name}] error:\n\n{msg}"
+  }
+}

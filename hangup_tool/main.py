@@ -4,14 +4,15 @@ from PySide6.QtWidgets import QApplication
 from config.paths import ensure_dirs
 from gui.main_window import MainWindow
 from utils.logger import setup_logger
+from utils.i18n import load_language
 
 
 def main():
-    # 1) 先确保数据目录存在（settings 加载、日志文件都需要它）
     ensure_dirs()
-
-    # 2) 初始化日志
     setup_logger()
+
+    # 加载语言（暂时硬编码 zh_cn，将来从设置里读）
+    load_language("en_us")
 
     app = QApplication(sys.argv)
     app.setApplicationName("HangupTool")

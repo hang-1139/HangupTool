@@ -18,6 +18,7 @@ hangup_tool/data/settings.json
 hangup_tool/data/logs/
 hangup_tool/data/tasks/*
 !hangup_tool/data/tasks/.gitkeep
+!hangup_tool/data/lang/
 
 # ---------- 系统 ----------
 Thumbs.db

@@ -15,6 +15,9 @@ TASKS_DIR = DATA_DIR / "tasks"
 # 日志目录（预留，将来可把日志也落盘）
 LOGS_DIR = DATA_DIR / "logs"
 
+# 语言文件目录
+LANG_DIR = DATA_DIR / "lang"
+
 
 def ensure_dirs():
     """启动时调用，确保所有需要的目录都存在"""
