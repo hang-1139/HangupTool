@@ -28,7 +28,7 @@ class TaskManager(QObject):
         worker.finished_signal.connect(lambda reason: self.task_finished.emit(name, reason))
         worker.error.connect(lambda msg: self.task_error.emit(name, msg))
         worker.log.connect(lambda msg: self.task_log.emit(name, msg))
-        worker.progress.connect(lambda v: self.task_progress.emit(name, v))
+        worker.iteration_done.connect(lambda v: self.task_progress.emit(name, v))
         worker.paused_signal.connect(lambda: self.task_paused.emit(name))
         worker.resumed_signal.connect(lambda: self.task_resumed.emit(name))
 

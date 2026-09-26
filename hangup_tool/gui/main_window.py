@@ -328,6 +328,7 @@ class MainWindow(QMainWindow):
         self.task_manager.task_log.connect(self._on_task_log, Qt.UniqueConnection)
         self.task_manager.task_paused.connect(self._on_task_paused, Qt.UniqueConnection)
         self.task_manager.task_resumed.connect(self._on_task_resumed, Qt.UniqueConnection)
+        self.task_manager.task_progress.connect(self._on_task_progress, Qt.UniqueConnection)
 
         log.info(tr("log.start_clicked",
                     interval=self.interval_spin.value(),
