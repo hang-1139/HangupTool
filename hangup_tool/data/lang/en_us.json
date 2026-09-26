@@ -2,13 +2,11 @@
   "_meta": { "code": "en_us", "name": "English" },
   "strings": {
     "app.title": "Hangup Tool",
-
     "menu.file": "&File",
     "menu.file.save": "&Save Config",
     "menu.file.quit": "&Quit",
     "menu.help": "&Help",
     "menu.help.about": "&About",
-
     "toolbar.start": "Start",
     "toolbar.stop": "Stop",
 
@@ -16,34 +14,76 @@
     "group.control": "Task Control",
     "group.status": "Status",
 
+    "label.task_file": "Task File:",
+    "placeholder.task_file": "Enter or pick a .hpt task file",
     "label.interval": "Interval:",
     "label.interval_suffix": " s",
+    "label.exit_mode": "Exit Mode:",
+
+    "radio.exit_count": "Iterations:",
+    "radio.exit_signal": "Logic Exit",
+    "radio.exit_forever": "Forever",
+
+    "tooltip.browse": "Browse task file",
+    "tooltip.detail": "Show task details",
+    "tooltip.interval_zero": "0 means no interval",
 
     "btn.start": "▶  Start (F8)",
+    "btn.pause": "⏸  Pause",
+    "btn.resume": "▶  Resume",
     "btn.stop": "■  Stop (F9)",
 
     "status.idle": "● Idle",
     "status.running": "● Running",
+    "status.paused": "⏸ Paused",
     "status.ready": "Ready",
     "status.stopped": "Stopped",
+    "status.task_loaded": "Task loaded: {name}",
     "status.run_count": "Runs: {n}",
+    "status.progress": "Progress: {n} / {total}",
 
     "log.title": "Log",
 
     "log.window_ready": "Main window initialized",
-    "log.start_clicked": "User clicked start, interval = {interval}s",
-    "log.stop_clicked": "User clicked stop",
-    "log.task_started": "Task started, interval = {interval}s",
+    "log.start_clicked": "Start clicked, interval = {interval}s, mode = {mode}, max = {max_iter}",
+    "log.stop_clicked": "Stop clicked",
+    "log.pause_clicked": "Pause clicked",
+    "log.resume_clicked": "Resume clicked",
     "log.task_iteration": "Iteration #{n}",
-    "log.task_exited": "Task exited",
+    "log.task_finished": "Task finished, reason: {reason}",
     "log.task_error": "Task [{name}] error: {msg}",
+    "log.task_loaded": "Task loaded: {name} v{version}",
     "log.settings_saved": "Settings saved",
     "log.exiting": "Exiting, stopping all tasks...",
     "log.lang_loaded": "Language switched: {code}",
 
     "dialog.about.title": "About",
     "dialog.about.body": "<h3>Hangup Tool v{version}</h3><p>Built with PySide6 + Python 3.14</p>",
-    "dialog.error.title": "Task Error",
-    "dialog.error.body": "Task [{name}] error:\n\n{msg}"
+    "dialog.error.title": "Error",
+    "dialog.error.body": "Task [{name}] error:\n\n{msg}",
+    "dialog.warn.title": "Warning",
+    "dialog.warn.no_task": "Please select a task file first.",
+
+    "file_dialog.select_task": "Select Task File",
+    "file_dialog.task_filter": "Hangup Task (*.hpt);;All Files (*)",
+
+    "task_detail.title": "Task Detail",
+    "task_detail.name": "Name",
+    "task_detail.task_version": "Task Version",
+    "task_detail.supported_app": "Supported App Version",
+    "task_detail.supports_logic_exit": "Logic Exit Support",
+    "task_detail.author": "Author",
+    "task_detail.created_at": "Created",
+    "task_detail.updated_at": "Updated",
+    "task_detail.format_version": "Format Version",
+    "task_detail.tab.info": "Info",
+    "task_detail.tab.desc": "Description",
+    "task_detail.tab.flow": "Flow",
+    "task_detail.no_desc": "(no description)",
+    "task_detail.no_steps": "(no steps)",
+    "task_detail.close": "Close",
+
+    "yes": "Yes",
+    "no": "No"
   }
 }

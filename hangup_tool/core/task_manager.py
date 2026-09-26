@@ -8,8 +8,10 @@ class TaskManager(QObject):
     后续想加新任务，只要 new 一个 Worker，register 一下即可。
     """
     task_started = Signal(str)         # (task_name)
-    task_finished = Signal(str)        # (task_name)
+    task_finished = Signal(str, str)        # (task_name)
     task_error = Signal(str, str)      # (task_name, error_msg)
+    task_paused = Signal(str)         # (task_name)
+    task_resumed = Signal(str)        # (task_name)
     task_log = Signal(str, str)        # (task_name, log_msg)
     task_progress = Signal(str, int)   # (task_name, value)
 
@@ -23,10 +25,12 @@ class TaskManager(QObject):
         self._workers[name] = worker
 
         worker.started_signal.connect(lambda: self.task_started.emit(name))
-        worker.finished_signal.connect(lambda: self.task_finished.emit(name))
+        worker.finished_signal.connect(lambda reason: self.task_finished.emit(name, reason))
         worker.error.connect(lambda msg: self.task_error.emit(name, msg))
         worker.log.connect(lambda msg: self.task_log.emit(name, msg))
         worker.progress.connect(lambda v: self.task_progress.emit(name, v))
+        worker.paused_signal.connect(lambda: self.task_paused.emit(name))
+        worker.resumed_signal.connect(lambda: self.task_resumed.emit(name))
 
     def start(self, name: str):
         w = self._workers.get(name)
@@ -46,3 +50,17 @@ class TaskManager(QObject):
     def is_running(self, name: str) -> bool:
         w = self._workers.get(name)
         return bool(w and w.isRunning())
+
+    def pause(self, name: str):
+        w = self._workers.get(name)
+        if w and w.is_running() and not w.is_paused():
+            w.pause()
+
+    def resume(self, name: str):
+        w = self._workers.get(name)
+        if w and w.is_running() and w.is_paused():
+            w.resume()
+
+    def is_paused(self, name: str) -> bool:
+        w = self._workers.get(name)
+        return bool(w and w.is_paused())

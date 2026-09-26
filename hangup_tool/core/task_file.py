@@ -77,6 +77,7 @@ class TaskMeta:
     description: str = ""
     task_version: str = "1.0.0"
     supported_app_version: str = "any"
+    supports_logic_exit: bool = False
     author: str = ""
     created_at: str = ""
     updated_at: str = ""
@@ -106,6 +107,7 @@ class TaskFile:
                 description=m.get("description", ""),
                 task_version=m.get("task_version", "1.0.0"),
                 supported_app_version=m.get("supported_app_version", "any"),
+                supports_logic_exit=m.get("supports_logic_exit", False),
                 author=m.get("author", ""),
                 created_at=m.get("created_at", ""),
                 updated_at=m.get("updated_at", ""),

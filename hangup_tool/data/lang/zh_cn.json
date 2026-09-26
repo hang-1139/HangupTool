@@ -2,13 +2,11 @@
   "_meta": { "code": "zh_cn", "name": "简体中文" },
   "strings": {
     "app.title": "挂机工具",
-
     "menu.file": "文件(&F)",
     "menu.file.save": "保存配置(&S)",
     "menu.file.quit": "退出(&Q)",
     "menu.help": "帮助(&H)",
     "menu.help.about": "关于(&A)",
-
     "toolbar.start": "开始",
     "toolbar.stop": "停止",
 
@@ -16,34 +14,76 @@
     "group.control": "任务控制",
     "group.status": "运行状态",
 
+    "label.task_file": "任务文件：",
+    "placeholder.task_file": "输入或选择 .hpt 任务文件",
     "label.interval": "执行间隔：",
     "label.interval_suffix": " 秒",
+    "label.exit_mode": "退出模式：",
+
+    "radio.exit_count": "次数：",
+    "radio.exit_signal": "逻辑执行",
+    "radio.exit_forever": "永远执行",
+
+    "tooltip.browse": "浏览任务文件",
+    "tooltip.detail": "查看任务详情",
+    "tooltip.interval_zero": "设为 0 表示无间隔",
 
     "btn.start": "▶  开始挂机 (F8)",
+    "btn.pause": "⏸  暂停",
+    "btn.resume": "▶  继续",
     "btn.stop": "■  停止 (F9)",
 
     "status.idle": "● 空闲",
     "status.running": "● 运行中",
+    "status.paused": "⏸ 已暂停",
     "status.ready": "就绪",
     "status.stopped": "已停止",
+    "status.task_loaded": "任务已加载：{name}",
     "status.run_count": "运行次数：{n}",
+    "status.progress": "进度：{n} / {total}",
 
     "log.title": "运行日志",
 
     "log.window_ready": "主窗口初始化完成",
-    "log.start_clicked": "用户点击开始，间隔 = {interval} 秒",
+    "log.start_clicked": "用户点击开始，间隔 = {interval} 秒，模式 = {mode}，次数 = {max_iter}",
     "log.stop_clicked": "用户点击停止",
-    "log.task_started": "任务启动，间隔 = {interval}s",
+    "log.pause_clicked": "用户点击暂停",
+    "log.resume_clicked": "用户点击继续",
     "log.task_iteration": "第 {n} 次执行",
-    "log.task_exited": "任务已退出",
+    "log.task_finished": "任务结束，原因：{reason}",
     "log.task_error": "任务 [{name}] 出错：{msg}",
+    "log.task_loaded": "任务已加载：{name} v{version}",
     "log.settings_saved": "配置已保存",
     "log.exiting": "程序退出中，正在停止所有任务...",
     "log.lang_loaded": "语言已切换：{code}",
 
     "dialog.about.title": "关于挂机工具",
     "dialog.about.body": "<h3>挂机工具 v{version}</h3><p>基于 PySide6 + Python 3.14 开发</p>",
-    "dialog.error.title": "任务错误",
-    "dialog.error.body": "任务 [{name}] 出错：\n\n{msg}"
+    "dialog.error.title": "错误",
+    "dialog.error.body": "任务 [{name}] 出错：\n\n{msg}",
+    "dialog.warn.title": "警告",
+    "dialog.warn.no_task": "请先选择任务文件。",
+
+    "file_dialog.select_task": "选择任务文件",
+    "file_dialog.task_filter": "挂机任务 (*.hpt);;所有文件 (*)",
+
+    "task_detail.title": "任务详情",
+    "task_detail.name": "任务名",
+    "task_detail.task_version": "任务版本",
+    "task_detail.supported_app": "支持程序版本",
+    "task_detail.supports_logic_exit": "支持逻辑退出",
+    "task_detail.author": "作者",
+    "task_detail.created_at": "创建时间",
+    "task_detail.updated_at": "更新时间",
+    "task_detail.format_version": "文件格式版本",
+    "task_detail.tab.info": "基本信息",
+    "task_detail.tab.desc": "描述",
+    "task_detail.tab.flow": "流程",
+    "task_detail.no_desc": "（无描述）",
+    "task_detail.no_steps": "（无步骤）",
+    "task_detail.close": "关闭",
+
+    "yes": "是",
+    "no": "否"
   }
 }
