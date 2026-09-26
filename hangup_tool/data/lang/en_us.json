@@ -28,10 +28,10 @@
     "tooltip.detail": "Show task details",
     "tooltip.interval_zero": "0 means no interval",
 
-    "btn.start": "▶  Start (F8)",
-    "btn.pause": "⏸  Pause",
-    "btn.resume": "▶  Resume",
-    "btn.stop": "■  Stop (F9)",
+    "btn.start": "Start (F8)",
+    "btn.pause": "Pause",
+    "btn.resume": "Resume",
+    "btn.stop": "Stop (F9)",
 
     "status.idle": "● Idle",
     "status.running": "● Running",

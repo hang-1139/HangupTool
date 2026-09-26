@@ -3,6 +3,7 @@ import logging
 
 from PySide6.QtCore import Qt, QByteArray
 from PySide6.QtGui import QAction, QKeySequence
+from PySide6.QtCore import Qt, QByteArray, QSize
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QFormLayout, QHBoxLayout,
     QPushButton, QLabel, QTextEdit, QGroupBox, QSplitter,
@@ -20,6 +21,7 @@ from core.task_manager import TaskManager
 from gui.task_detail_dialog import TaskDetailDialog
 from utils.logger import log_emitter
 from utils.i18n import tr
+from utils.textures import get_icon, get_app_icon
 
 log = logging.getLogger("HangupTool")
 
@@ -30,12 +32,20 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle(f"{tr('app.title')} v{APP_VERSION}")
+
+        # 窗口图标（缺失 app_icon.png 时自动跳过）
+        app_icon = get_app_icon()
+        if not app_icon.isNull():
+            self.setWindowIcon(app_icon)
+
         self.resize(1050, 720)
 
+        # 核心对象
         self.task_manager = TaskManager(self)
         self.current_task: TaskFile | None = None
         self.current_worker = None
 
+        # UI 构建顺序：先建控件，再挂菜单/工具栏/状态栏，最后加载配置
         self._init_ui()
         self._init_menu()
         self._init_toolbar()
@@ -135,10 +145,20 @@ class MainWindow(QMainWindow):
         # ---------- 任务控制 ----------
         ctrl = QGroupBox(tr("group.control"))
         cl = QVBoxLayout(ctrl)
+        ICON_SIZE = 24
+
         self.start_btn = QPushButton(tr("btn.start"))
+        self.start_btn.setIcon(get_icon("start", ICON_SIZE))
+        self.start_btn.setIconSize(QSize(ICON_SIZE, ICON_SIZE))
+
         self.pause_btn = QPushButton(tr("btn.pause"))
+        self.pause_btn.setIcon(get_icon("pause", ICON_SIZE))
+        self.pause_btn.setIconSize(QSize(ICON_SIZE, ICON_SIZE))
         self.pause_btn.setEnabled(False)
+
         self.stop_btn = QPushButton(tr("btn.stop"))
+        self.stop_btn.setIcon(get_icon("stop", ICON_SIZE))  # stop.png 缺失时为空图标
+        self.stop_btn.setIconSize(QSize(ICON_SIZE, ICON_SIZE))
         self.stop_btn.setEnabled(False)
         cl.addWidget(self.start_btn)
         cl.addWidget(self.pause_btn)
@@ -201,12 +221,15 @@ class MainWindow(QMainWindow):
     def _init_toolbar(self):
         tb = QToolBar("main", self)
         tb.setMovable(False)
+        tb.setIconSize(QSize(24, 24))
         self.addToolBar(tb)
-        a = QAction(tr("toolbar.start"), self)
+
+        a = QAction(get_icon("start", 24), tr("toolbar.start"), self)
         a.setShortcut("F8")
         a.triggered.connect(self._on_start)
         tb.addAction(a)
-        b = QAction(tr("toolbar.stop"), self)
+
+        b = QAction(get_icon("stop", 24), tr("toolbar.stop"), self)
         b.setShortcut("F9")
         b.triggered.connect(self._on_stop)
         tb.addAction(b)
@@ -366,11 +389,13 @@ class MainWindow(QMainWindow):
         self.state_label.setText(tr("status.paused"))
         self.state_label.setStyleSheet("color: #e67e22; font-weight: bold;")
         self.pause_btn.setText(tr("btn.resume"))
+        self.pause_btn.setIcon(get_icon("resume", 24))
 
     def _on_task_resumed(self, name: str):
         self.state_label.setText(tr("status.running"))
         self.state_label.setStyleSheet("color: #27ae60; font-weight: bold;")
         self.pause_btn.setText(tr("btn.pause"))
+        self.pause_btn.setIcon(get_icon("pause", 24))
 
     def _on_task_finished(self, name: str, reason: str):
         self.state_label.setText(tr("status.idle"))
@@ -379,6 +404,7 @@ class MainWindow(QMainWindow):
         self.start_btn.setEnabled(True)
         self.pause_btn.setEnabled(False)
         self.pause_btn.setText(tr("btn.pause"))
+        self.pause_btn.setIcon(get_icon("pause", 24))
         self.stop_btn.setEnabled(False)
         log.info(tr("log.task_finished", reason=reason))
 
