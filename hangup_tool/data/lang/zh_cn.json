@@ -28,9 +28,9 @@
     "tooltip.detail": "查看任务详情",
     "tooltip.interval_zero": "设为 0 表示无间隔",
 
-    "btn.start": "开始挂机 (F8)",
-    "btn.pause": "暂停",
-    "btn.resume": "继续",
+    "btn.start": "开始挂机 (F5)",
+    "btn.pause": "暂停(F8)",
+    "btn.resume": "继续(F8)",
     "btn.stop": "停止 (F9)",
 
     "status.idle": "● 空闲",
