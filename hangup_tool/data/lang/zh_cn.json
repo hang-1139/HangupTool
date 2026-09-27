@@ -83,6 +83,17 @@
     "task_detail.no_steps": "（无步骤）",
     "task_detail.close": "关闭",
 
+    "menu.file.export_log": "导出日志(&E)...",
+    "toolbar.pause": "暂停",
+    "toolbar.resume": "继续",
+    "file_dialog.export_log": "导出日志",
+    "file_dialog.log_filter": "文本文件 (*.txt);;所有文件 (*)",
+    "dialog.export_ok.title": "导出成功",
+    "dialog.export_ok.body": "日志已导出到：\n{path}",
+    "dialog.export_fail.title": "导出失败",
+    "dialog.export_fail.body": "无法写入日志文件：\n{msg}",
+    "log.log_exported": "日志已导出：{path}",
+
     "yes": "是",
     "no": "否"
   }

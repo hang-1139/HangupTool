@@ -83,6 +83,17 @@
     "task_detail.no_steps": "(no steps)",
     "task_detail.close": "Close",
 
+    "menu.file.export_log": "&Export Log...",
+    "toolbar.pause": "Pause",
+    "toolbar.resume": "Resume",
+    "file_dialog.export_log": "Export Log",
+    "file_dialog.log_filter": "Text Files (*.txt);;All Files (*)",
+    "dialog.export_ok.title": "Export Success",
+    "dialog.export_ok.body": "Log exported to:\n{path}",
+    "dialog.export_fail.title": "Export Failed",
+    "dialog.export_fail.body": "Failed to write log file:\n{msg}",
+    "log.log_exported": "Log exported: {path}",
+
     "yes": "Yes",
     "no": "No"
   }

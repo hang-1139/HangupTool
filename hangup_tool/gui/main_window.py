@@ -1,9 +1,9 @@
 import html
 import logging
+from datetime import datetime
 
-from PySide6.QtCore import Qt, QByteArray
-from PySide6.QtGui import QAction, QKeySequence
 from PySide6.QtCore import Qt, QByteArray, QSize
+from PySide6.QtGui import QAction, QKeySequence
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QFormLayout, QHBoxLayout,
     QPushButton, QLabel, QTextEdit, QGroupBox, QSplitter,
@@ -12,7 +12,7 @@ from PySide6.QtWidgets import (
     QToolButton,
 )
 
-from config.paths import TASKS_DIR
+from config.paths import TASKS_DIR, LOGS_DIR
 from config.settings import settings
 from config.version import APP_VERSION
 from core.task_builder import build_worker
@@ -26,6 +26,13 @@ from utils.textures import get_icon, get_app_icon
 log = logging.getLogger("HangupTool")
 
 TASK_KEY = "current"
+ICON_SIZE = 24
+
+# 快捷键集中定义，方便后续统一调整
+SHORTCUT_START = "F5"
+SHORTCUT_PAUSE = "F8"
+SHORTCUT_STOP = "F9"
+SHORTCUT_EXPORT_LOG = "Ctrl+Shift+S"
 
 
 class MainWindow(QMainWindow):
@@ -44,6 +51,9 @@ class MainWindow(QMainWindow):
         self.task_manager = TaskManager(self)
         self.current_task: TaskFile | None = None
         self.current_worker = None
+
+        # 导出日志用的纯文本缓冲（与日志区所见内容一致）
+        self._log_lines: list[str] = []
 
         # UI 构建顺序：先建控件，再挂菜单/工具栏/状态栏，最后加载配置
         self._init_ui()
@@ -82,15 +92,22 @@ class MainWindow(QMainWindow):
         self.task_file_edit = QLineEdit()
         self.task_file_edit.setPlaceholderText(tr("placeholder.task_file"))
         self.task_file_edit.editingFinished.connect(self._on_task_path_edited)
+
         self.browse_btn = QToolButton()
+        self.browse_btn.setIcon(get_icon("browse", ICON_SIZE))
+        self.browse_btn.setIconSize(QSize(ICON_SIZE, ICON_SIZE))
         self.browse_btn.setText("📁")
         self.browse_btn.setToolTip(tr("tooltip.browse"))
         self.browse_btn.clicked.connect(self._on_browse)
+
         self.detail_btn = QToolButton()
+        self.detail_btn.setIcon(get_icon("info", ICON_SIZE))
+        self.detail_btn.setIconSize(QSize(ICON_SIZE, ICON_SIZE))
         self.detail_btn.setText("ℹ")
         self.detail_btn.setToolTip(tr("tooltip.detail"))
         self.detail_btn.clicked.connect(self._on_show_detail)
         self.detail_btn.setEnabled(False)
+
         file_row.addWidget(self.task_file_edit, 1)
         file_row.addWidget(self.browse_btn)
         file_row.addWidget(self.detail_btn)
@@ -111,7 +128,6 @@ class MainWindow(QMainWindow):
 
         self.exit_group = QButtonGroup(self)
 
-        # 次数
         row_count = QHBoxLayout()
         self.radio_count = QRadioButton(tr("radio.exit_count"))
         self.max_iter_spin = QSpinBox()
@@ -124,19 +140,16 @@ class MainWindow(QMainWindow):
         pf.addRow("", row_count)
         self.exit_group.addButton(self.radio_count, 0)
 
-        # 逻辑执行
         self.radio_signal = QRadioButton(tr("radio.exit_signal"))
-        self.radio_signal.setEnabled(False)   # 未加载任务时禁用
+        self.radio_signal.setEnabled(False)
         pf.addRow("", self.radio_signal)
         self.exit_group.addButton(self.radio_signal, 1)
 
-        # 永远执行
         self.radio_forever = QRadioButton(tr("radio.exit_forever"))
         self.radio_forever.setChecked(True)
         pf.addRow("", self.radio_forever)
         self.exit_group.addButton(self.radio_forever, 2)
 
-        # 联动
         self.exit_group.buttonClicked.connect(self._on_exit_mode_changed)
         self._on_exit_mode_changed()
 
@@ -145,7 +158,6 @@ class MainWindow(QMainWindow):
         # ---------- 任务控制 ----------
         ctrl = QGroupBox(tr("group.control"))
         cl = QVBoxLayout(ctrl)
-        ICON_SIZE = 24
 
         self.start_btn = QPushButton(tr("btn.start"))
         self.start_btn.setIcon(get_icon("start", ICON_SIZE))
@@ -157,9 +169,10 @@ class MainWindow(QMainWindow):
         self.pause_btn.setEnabled(False)
 
         self.stop_btn = QPushButton(tr("btn.stop"))
-        self.stop_btn.setIcon(get_icon("stop", ICON_SIZE))  # stop.png 缺失时为空图标
+        self.stop_btn.setIcon(get_icon("stop", ICON_SIZE))
         self.stop_btn.setIconSize(QSize(ICON_SIZE, ICON_SIZE))
         self.stop_btn.setEnabled(False)
+
         cl.addWidget(self.start_btn)
         cl.addWidget(self.pause_btn)
         cl.addWidget(self.stop_btn)
@@ -168,10 +181,14 @@ class MainWindow(QMainWindow):
         # ---------- 状态 ----------
         st = QGroupBox(tr("group.status"))
         sl = QVBoxLayout(st)
+
         self.state_label = QLabel(tr("status.idle"))
-        self.state_label.setStyleSheet("color: #888; font-weight: bold;")
+        self.state_label.setObjectName("stateLabel")
+        self.state_label.setProperty("state", "idle")
+
         self.count_label = QLabel(tr("status.run_count", n=0))
         self.progress_label = QLabel(tr("status.progress", n=0, total="-"))
+
         sl.addWidget(self.state_label)
         sl.addWidget(self.count_label)
         sl.addWidget(self.progress_label)
@@ -188,31 +205,41 @@ class MainWindow(QMainWindow):
         panel = QWidget()
         layout = QVBoxLayout(panel)
         layout.setContentsMargins(8, 8, 8, 8)
-        t = QLabel(tr("log.title"))
-        t.setStyleSheet("font-weight: bold; font-size: 13px;")
-        layout.addWidget(t)
+
+        title = QLabel(tr("log.title"))
+        title.setObjectName("panelTitle")
+        layout.addWidget(title)
+
         self.log_view = QTextEdit()
+        self.log_view.setObjectName("logView")
         self.log_view.setReadOnly(True)
-        self.log_view.setStyleSheet(
-            "font-family: Consolas, 'Courier New', monospace;"
-            "font-size: 12px; background: #fafafa;"
-        )
         layout.addWidget(self.log_view)
         return panel
 
     def _init_menu(self):
         mb = self.menuBar()
+
+        # ---------- 文件 ----------
         fm = mb.addMenu(tr("menu.file"))
+
+        export_a = QAction(tr("menu.file.export_log"), self)
+        export_a.setShortcut(QKeySequence(SHORTCUT_EXPORT_LOG))
+        export_a.triggered.connect(self._on_export_log)
+        fm.addAction(export_a)
+
         save_a = QAction(tr("menu.file.save"), self)
         save_a.setShortcut(QKeySequence.Save)
         save_a.triggered.connect(self._save_settings)
         fm.addAction(save_a)
+
         fm.addSeparator()
+
         quit_a = QAction(tr("menu.file.quit"), self)
         quit_a.setShortcut(QKeySequence.Quit)
         quit_a.triggered.connect(self.close)
         fm.addAction(quit_a)
 
+        # ---------- 帮助 ----------
         hm = mb.addMenu(tr("menu.help"))
         about_a = QAction(tr("menu.help.about"), self)
         about_a.triggered.connect(self._show_about)
@@ -221,18 +248,33 @@ class MainWindow(QMainWindow):
     def _init_toolbar(self):
         tb = QToolBar("main", self)
         tb.setMovable(False)
-        tb.setIconSize(QSize(24, 24))
+        tb.setIconSize(QSize(ICON_SIZE, ICON_SIZE))
         self.addToolBar(tb)
 
-        a = QAction(get_icon("start", 24), tr("toolbar.start"), self)
-        a.setShortcut("F8")
-        a.triggered.connect(self._on_start)
-        tb.addAction(a)
+        # 开始
+        self.start_action = QAction(
+            get_icon("start", ICON_SIZE), tr("toolbar.start"), self
+        )
+        self.start_action.setShortcut(SHORTCUT_START)
+        self.start_action.triggered.connect(self._on_start)
+        tb.addAction(self.start_action)
 
-        b = QAction(get_icon("stop", 24), tr("toolbar.stop"), self)
-        b.setShortcut("F9")
-        b.triggered.connect(self._on_stop)
-        tb.addAction(b)
+        # 暂停（运行中才可用）
+        self.pause_action = QAction(
+            get_icon("pause", ICON_SIZE), tr("toolbar.pause"), self
+        )
+        self.pause_action.setShortcut(SHORTCUT_PAUSE)
+        self.pause_action.setEnabled(False)
+        self.pause_action.triggered.connect(self._on_pause_resume)
+        tb.addAction(self.pause_action)
+
+        # 停止
+        self.stop_action = QAction(
+            get_icon("stop", ICON_SIZE), tr("toolbar.stop"), self
+        )
+        self.stop_action.setShortcut(SHORTCUT_STOP)
+        self.stop_action.triggered.connect(self._on_stop)
+        tb.addAction(self.stop_action)
 
     def _init_statusbar(self):
         sb = QStatusBar()
@@ -246,6 +288,10 @@ class MainWindow(QMainWindow):
         log_emitter.message.connect(self._append_log)
 
     def _append_log(self, level: str, message: str):
+        # ① 纯文本缓冲（导出用）
+        self._log_lines.append(message)
+
+        # ② 彩色显示
         color = {
             "DEBUG": "#888888", "INFO": "#2c3e50",
             "WARNING": "#e67e22", "ERROR": "#e74c3c",
@@ -257,6 +303,49 @@ class MainWindow(QMainWindow):
         self.log_view.verticalScrollBar().setValue(
             self.log_view.verticalScrollBar().maximum()
         )
+
+    def _set_state(self, state: str, text: str):
+        """切换状态标签的颜色和文本（颜色由 QSS 根据 dynamic property 决定）"""
+        self.state_label.setText(text)
+        self.state_label.setProperty("state", state)
+        self.state_label.style().unpolish(self.state_label)
+        self.state_label.style().polish(self.state_label)
+
+    # ==================== 日志导出 ====================
+    def _on_export_log(self):
+        now = datetime.now()
+        # 文件名：log-YYYY-MM-DD-HH-MM-SS.txt
+        # ⚠️ 冒号在 Windows 文件名中非法，用 - 代替
+        default_name = (
+            f"log-{now.strftime('%Y-%m-%d')}-{now.strftime('%H-%M-%S')}.txt"
+        )
+        default_path = str(LOGS_DIR / default_name)
+
+        path, _ = QFileDialog.getSaveFileName(
+            self,
+            tr("file_dialog.export_log"),
+            default_path,
+            tr("file_dialog.log_filter"),
+        )
+        if not path:
+            return
+
+        try:
+            with open(path, "w", encoding="utf-8") as f:
+                f.write("\n".join(self._log_lines))
+        except OSError as e:
+            QMessageBox.critical(
+                self, tr("dialog.export_fail.title"),
+                tr("dialog.export_fail.body", msg=str(e)),
+            )
+            log.error(f"导出日志失败: {e}")
+            return
+
+        QMessageBox.information(
+            self, tr("dialog.export_ok.title"),
+            tr("dialog.export_ok.body", path=path),
+        )
+        log.info(tr("log.log_exported", path=path))
 
     # ==================== 任务文件 ====================
     def _on_browse(self):
@@ -377,35 +466,52 @@ class MainWindow(QMainWindow):
 
     # ==================== 任务信号响应 ====================
     def _on_task_started(self, name: str):
-        self.state_label.setText(tr("status.running"))
-        self.state_label.setStyleSheet("color: #27ae60; font-weight: bold;")
+        self._set_state("running", tr("status.running"))
         self.status_label.setText(tr("status.running"))
+        # 侧栏按钮
         self.start_btn.setEnabled(False)
         self.pause_btn.setEnabled(True)
         self.pause_btn.setText(tr("btn.pause"))
+        self.pause_btn.setIcon(get_icon("pause", ICON_SIZE))
         self.stop_btn.setEnabled(True)
+        # 工具栏
+        self.start_action.setEnabled(False)
+        self.pause_action.setEnabled(True)
+        self.pause_action.setText(tr("toolbar.pause"))
+        self.pause_action.setIcon(get_icon("pause", ICON_SIZE))
 
     def _on_task_paused(self, name: str):
-        self.state_label.setText(tr("status.paused"))
-        self.state_label.setStyleSheet("color: #e67e22; font-weight: bold;")
+        self._set_state("paused", tr("status.paused"))
+        # 侧栏
         self.pause_btn.setText(tr("btn.resume"))
-        self.pause_btn.setIcon(get_icon("resume", 24))
+        self.pause_btn.setIcon(get_icon("resume", ICON_SIZE))
+        # 工具栏
+        self.pause_action.setText(tr("toolbar.resume"))
+        self.pause_action.setIcon(get_icon("resume", ICON_SIZE))
 
     def _on_task_resumed(self, name: str):
-        self.state_label.setText(tr("status.running"))
-        self.state_label.setStyleSheet("color: #27ae60; font-weight: bold;")
+        self._set_state("running", tr("status.running"))
+        # 侧栏
         self.pause_btn.setText(tr("btn.pause"))
-        self.pause_btn.setIcon(get_icon("pause", 24))
+        self.pause_btn.setIcon(get_icon("pause", ICON_SIZE))
+        # 工具栏
+        self.pause_action.setText(tr("toolbar.pause"))
+        self.pause_action.setIcon(get_icon("pause", ICON_SIZE))
 
     def _on_task_finished(self, name: str, reason: str):
-        self.state_label.setText(tr("status.idle"))
-        self.state_label.setStyleSheet("color: #888; font-weight: bold;")
+        self._set_state("idle", tr("status.idle"))
         self.status_label.setText(tr("status.stopped"))
+        # 侧栏
         self.start_btn.setEnabled(True)
         self.pause_btn.setEnabled(False)
         self.pause_btn.setText(tr("btn.pause"))
-        self.pause_btn.setIcon(get_icon("pause", 24))
+        self.pause_btn.setIcon(get_icon("pause", ICON_SIZE))
         self.stop_btn.setEnabled(False)
+        # 工具栏
+        self.start_action.setEnabled(True)
+        self.pause_action.setEnabled(False)
+        self.pause_action.setText(tr("toolbar.pause"))
+        self.pause_action.setIcon(get_icon("pause", ICON_SIZE))
         log.info(tr("log.task_finished", reason=reason))
 
     def _on_task_error(self, name: str, msg: str):
@@ -439,7 +545,6 @@ class MainWindow(QMainWindow):
                 log.warning(f"restore geometry failed: {e}")
         self.interval_spin.setValue(settings.get_float("task/interval", 1.0))
         self.task_file_edit.setText(settings.get("task/last_file", ""))
-        # 若上次有任务文件，尝试自动加载
         p = self.task_file_edit.text().strip()
         if p:
             self._load_task_file(p)
