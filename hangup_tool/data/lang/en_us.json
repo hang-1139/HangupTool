@@ -37,9 +37,9 @@
     "btn.resume": "Resume",
     "btn.stop": "Stop",
 
-    "status.idle": "● Idle",
-    "status.running": "● Running",
-    "status.paused": "⏸ Paused",
+    "status.idle": "Idle",
+    "status.running": "Running",
+    "status.paused": "Paused",
     "status.ready": "Ready",
     "status.stopped": "Stopped",
     "status.task_loaded": "Task loaded: {name}",

@@ -37,9 +37,9 @@
     "btn.resume": "继续",
     "btn.stop": "停止",
 
-    "status.idle": "● 空闲",
-    "status.running": "● 运行中",
-    "status.paused": "⏸ 已暂停",
+    "status.idle": "空闲",
+    "status.running": "运行中",
+    "status.paused": "已暂停",
     "status.ready": "就绪",
     "status.stopped": "已停止",
     "status.task_loaded": "任务已加载：{name}",
